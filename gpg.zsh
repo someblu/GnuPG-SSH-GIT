@@ -33,8 +33,14 @@ if ! grep -q 'source "${HOME}/.gnupg/gpg.zsh"' "${HOME}/.zshrc"; then
   echo 'source "${HOME}/.gnupg/gpg.zsh"' >> "${HOME}/.zshrc"
 fi
 
+# gpg --expert --full-gen-key
+## "ECC and ECC" - "Curve 25519" - "key does not expire" - "Jiahao Zhou" - "zhoujiahao@bytedance.com"
+# gpg --expert --edit-key "Jiahao Zhou"
+## "addkey" - 
+
 if [ -n "$1" -a -d $1 ]; then
-  gpg --import $1/*.asc
+  gpg --import $1/secring.bak
+  gpg --import-ownertrust $1/trustdb.bak
 fi
 
 # ask for gpg user name
@@ -57,15 +63,20 @@ if [ -z "$(ssh-add -L | grep "$(gpg --export-ssh-key $GPG_USERNAME| awk '{print 
   echo "$(gpg -k --with-keygrip $GPG_USERNAME | grep '\[A\]' -A1 | tail -n 1 | awk '{print $3}') 0" > "${HOME}/.gnupg/sshcontrol"
 fi
 
+# pubkey
+# gpg -a --export
+
 # global git config
 git config --global gpg.program "gpg"
 git config --global user.signingkey "$(gpg -k --keyid-format long | grep '\[S\]' | awk -F '[ /]' '{print $5}')"
 git config --global commit.gpgsign true
 
 # backup pub, sec and All-In-One sub keys
-# gpg -a --output pub.asc --export $KEY_ID
-# echo $GPG_PASSPHRASE | gpg --pinentry-mode loopback --passphrase-fd 0 -a --output sec.asc --export-secret-keys $KEY_ID
-# echo $GPG_PASSPHRASE | gpg --pinentry-mode loopback --passphrase-fd 0 -a --output sub.asc --export-secret-subkeys $KEY_ID
+# rm -rf gpg && mkdir gpg
+# gpg --export-ownertrust > gpg/trustdb.bak
+# echo $GPG_PASSPHRASE | gpg --pinentry-mode loopback --passphrase-fd 0 -a --output gpg/secring.bak --export-secret-keys $GPG_USERNAME
+# zip gpg.zip -r gpg
+# rm -rf gpg
 
 # backup sub keys seperately
 # gpg -k --keyid-format long | grep 'sub' | awk -F '[][ /]' '{print $5" "$8}' | while read subkeyid type; do echo $GPG_PASSPHRASE | gpg --pinentry-mode loopback --passphrase-fd 0 -a --output sub-$type.asc --export-secret-subkeys $subkeyid'!'; done
