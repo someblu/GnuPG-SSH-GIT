@@ -36,7 +36,7 @@ fi
 # gpg --expert --full-gen-key
 ## "ECC and ECC" - "Curve 25519" - "key does not expire" - "Jiahao Zhou" - "zhoujiahao@bytedance.com"
 # gpg --expert --edit-key "Jiahao Zhou"
-## "addkey" - 
+## "addkey" - "quit"/"-signing key +authenticate key quit"
 
 if [ -n "$1" -a -d $1 ]; then
   gpg --import $1/secring.bak
