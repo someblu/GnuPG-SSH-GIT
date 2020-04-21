@@ -7,6 +7,7 @@ if ! type gpg &>/dev/null; then
   # use brew to instal GnuPG
   ## sudo chown -R $(whoami) /usr/local/{"bin","etc","include","lib","sbin","share","var","Frameworks"}
   brew install gnupg pinentry-mac
+  gpg --list-keys
   echo "pinentry-program /usr/local/bin/pinentry-mac" > "${HOME}/.gnupg/gpg-agent.conf"
   chmod 600 "${HOME}/.gnupg/gpg-agent.conf"
   gpg-connect-agent reloadagent /bye >/dev/null
