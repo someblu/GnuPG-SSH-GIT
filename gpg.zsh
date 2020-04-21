@@ -8,6 +8,7 @@ if ! type gpg &>/dev/null; then
   ## sudo chown -R $(whoami) /usr/local/{"bin","etc","include","lib","sbin","share","var","Frameworks"}
   brew install gnupg pinentry-mac
   echo "pinentry-program /usr/local/bin/pinentry-mac" > "${HOME}/.gnupg/gpg-agent.conf"
+  chmod 600 "${HOME}/.gnupg/gpg-agent.conf"
   gpg-connect-agent reloadagent /bye >/dev/null
 fi
 
@@ -29,6 +30,7 @@ if type gpg &>/dev/null; then
   gpg-connect-agent -q /bye
 fi
 END
+chmod 600 "${HOME}/.gnupg/gpg.zsh"
 if ! grep -q 'source "${HOME}/.gnupg/gpg.zsh"' "${HOME}/.zshrc"; then
   echo 'source "${HOME}/.gnupg/gpg.zsh"' >> "${HOME}/.zshrc"
 fi
@@ -61,6 +63,7 @@ done
 # ssh add key from gpg
 if [ -z "$(ssh-add -L | grep "$(gpg --export-ssh-key $GPG_USERNAME| awk '{print $2}')")" ]; then
   echo "$(gpg -k --with-keygrip $GPG_USERNAME | grep '\[A\]' -A1 | tail -n 1 | awk '{print $3}') 0" > "${HOME}/.gnupg/sshcontrol"
+  chmod 600 "${HOME}/.gnupg/sshcontrol"
 fi
 
 # pubkey
